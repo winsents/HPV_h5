@@ -4,10 +4,19 @@
     <div class="logo"></div>
     <div class="index-title"></div>
     <div class="items">
-      <div class="item item-1" @click="onTo(1)"></div>
-      <div class="item item-2" @click="onTo(2)"></div>
-      <div class="item item-3" @click="onTo(3)"></div>
-      <div class="item item-4" @click="onTo(4)"></div>
+<!--      <div class="item item-1" @click="onTo(1)"></div>-->
+<!--      <div class="item item-2" @click="onTo(2)"></div>-->
+<!--      <div class="item item-3" @click="onTo(3)"></div>-->
+<!--      <div class="item item-4" @click="onTo(4)"></div>-->
+
+      <div class="items-box">
+        <div class="item item-1" @click="onTo(1)"></div>
+        <div class="item item-2" @click="onTo(4)"></div>
+        <div class="item item-3" @click="onTo(3)"></div>
+        <div class="item item-4" @click="onTo(2)"></div>
+
+      </div>
+
     </div>
     <van-popup v-model:show="item1Dialog.show" :style="{ height: '100%', width: '100%',maxWidth: 'unset' }" :close-on-click-overlay="false">
       <div class="popup">
@@ -195,7 +204,7 @@ export default {
 
 
   .items{
-    top: 4rem;
+    top: 4.2rem;
     left: 0;
     right: 0;
     bottom: 0.5rem;
@@ -203,11 +212,21 @@ export default {
     overflow: hidden;
     overflow-y: scroll;
 
+    .items-box{
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      gap: 0.5rem;
+    }
+
     .item{
-      width: (12.57 / $baseRatio)*1rem;
-      height: (3.88 / $baseRatio)*1rem;
-      margin: 0.15rem auto;
+      width: (5.71 / $baseRatio)*1rem;
+      height: (6.77 / $baseRatio)*1rem;
+      //margin: 0.15rem auto;
       background-size: 100%;
+      background-repeat: no-repeat;
 
       &.item-1{
         background-image: url("~@/assets/images/item1.png");
