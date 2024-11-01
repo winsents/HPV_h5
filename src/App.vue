@@ -54,6 +54,17 @@ export default {
       }, 500); // 可以调整延迟时间以达到更好的效果
     };
 
+    document.addEventListener('keydown', (event) => {
+      if ((event.ctrlKey || event.metaKey) && (event.key === '+' || event.key === '-' || event.key === '0')) {
+        event.preventDefault();
+      }
+    });
+
+    document.addEventListener('dblclick', function (event) {
+      console.log('dblclick');
+      event.preventDefault(); // 阻止双击放大
+    });
+
 
     return {
       showSplashScreen,
@@ -73,6 +84,7 @@ html,body{
   flex-direction: column;
   position: relative;
   overflow: hidden;
+  touch-action: manipulation; /* 禁用双指缩放 */
 }
 html{
   padding: 0;

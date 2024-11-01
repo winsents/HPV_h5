@@ -144,6 +144,10 @@ export default {
   background-size: cover;
   background-image: url("~@/assets/images/bg.jpg");
 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
 
   .logo{
     top: 0.5rem;
@@ -157,7 +161,7 @@ export default {
   }
 
   .pdf-title{
-    margin: 3rem auto 0 auto;
+    margin: 0 auto 0 auto;
     width: (7.69 / $baseRatio)*1rem;
     height: (1.37 / $baseRatio)*1rem;
     background-size: 100%;

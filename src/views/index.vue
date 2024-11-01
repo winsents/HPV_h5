@@ -3,6 +3,7 @@
   <div class="main-container">
     <div class="logo"></div>
     <div class="index-title"></div>
+    <div class="close" @click="onCloseApp"></div>
     <div class="items">
 <!--      <div class="item item-1" @click="onTo(1)"></div>-->
 <!--      <div class="item item-2" @click="onTo(2)"></div>-->
@@ -46,6 +47,17 @@
       </div>
     </van-popup>
 
+    <van-popup v-model:show="screensaverDialog.show" :style="{ height: '100%', width: '100%',maxWidth: 'unset' }" :close-on-click-overlay="false">
+      <div class="popup" @click="onCloseScreensaverDialog">
+        <vue-plyr ref="plyr1" :options="options1">
+          <video
+              :src="screensaverDialog.url"
+          >
+          </video>
+        </vue-plyr>
+      </div>
+    </van-popup>
+
 
   </div>
 </template>
@@ -56,7 +68,6 @@ import api from "@/services/api";
 import {showToast} from "vant";
 import PdfPlayer from "@/components/PdfPlayer.vue";
 import VuePlyr from '@skjnldsv/vue-plyr';
-
 
 export default {
   name: 'IndexView',
@@ -95,6 +106,18 @@ export default {
         muted: false,
         autoplay: true,
         loop: {
+          active: true,
+        },
+        speed: {
+          selected: 1,
+          options: [0.5, 1, 1.5, 2],
+        },
+      },
+      options1: {
+        controls: [],
+        muted: false,
+        autoplay: true,
+        loop: {
           active: false,
         },
         speed: {
@@ -102,12 +125,88 @@ export default {
           options: [0.5, 1, 1.5, 2],
         },
       },
+      idleTimeout: null,
+      idleTime: 1000 * 60 * 5,// * 5, // 5分钟
+      screensaverDialog:{
+        show:false,
+        urls:[
+          './file/video_2.mp4',
+          './file/video_1.mp4'
+        ],
+        url:null,
+        currentIndex:0
+      }
     };
   },
   mounted() {
+    window.addEventListener('mousemove', this.resetIdleTimer);
+    window.addEventListener('keydown', this.resetIdleTimer);
+    window.addEventListener('click', this.resetIdleTimer);
+    window.addEventListener('touchstart', this.resetIdleTimer);
 
+    // 初始化计时器
+    this.resetIdleTimer();
   },
   methods: {
+    resetIdleTimer(){
+
+      clearTimeout(this.idleTimeout); // 清除上次的计时器
+
+      // 设置新的计时器
+      this.idleTimeout = setTimeout(() => {
+        this.onIdleFun();
+      }, this.idleTime);
+    },
+    onIdleFun(){
+      console.log('5分钟未操作');
+
+      if (this.item1Dialog.show){
+        this.onClose();
+      }
+
+      if (this.screensaverDialog.show){
+        return;
+      }
+
+      this.screensaverDialog.show = true;
+      this.screensaverDialog.url = '';
+      this.$nextTick(() => {
+        this.screensaverDialog.currentIndex = this.screensaverDialog.currentIndex === 0?1:0;
+        this.screensaverDialog.url = this.screensaverDialog.urls[this.screensaverDialog.currentIndex];
+
+        this.$nextTick(() => {
+          this.$refs.plyr1.player.play();
+
+          this.$refs.plyr1.player.on('ended', () => {
+            this.$nextTick(() => {
+              this.onVideoEnded();
+            });
+          });
+        });
+      });
+
+    },
+    onVideoEnded(){
+      this.screensaverDialog.url = '';
+      this.$nextTick(() => {
+
+        this.screensaverDialog.currentIndex = this.screensaverDialog.currentIndex === 0?1:0;
+        this.screensaverDialog.url = this.screensaverDialog.urls[this.screensaverDialog.currentIndex];
+
+        this.$nextTick(() => {
+          this.$refs.plyr1.player.play();
+        });
+      });
+    },
+    onCloseScreensaverDialog(e){
+
+      this.screensaverDialog.url = '';
+
+      this.$nextTick(() => {
+        this.screensaverDialog.show = false;
+      })
+
+    },
     onTo(type){
       this.item1Dialog.show = true;
       switch (type) {
@@ -137,7 +236,11 @@ export default {
         this.$refs.plyr.destroy();
 
       }
-
+    },
+    onCloseApp(){
+      if (window.electronAPI){
+        window.electronAPI.closeWindow();
+      }
     },
     base64ToFile(base64String, fileName,type){
       const byteString = atob(base64String.split(',')[1]);
@@ -201,6 +304,16 @@ export default {
     transform: translateX(-50%);
   }
 
+  .close{
+    bottom: 0rem;
+    left: 0rem;
+    position: fixed;
+    width: 0.5rem;
+    height: 0.5rem;
+    z-index: 200;
+    //background-color: #144CB4;
+  }
+
 
 
   .items{
@@ -209,8 +322,8 @@ export default {
     right: 0;
     bottom: 0.5rem;
     position: absolute;
-    overflow: hidden;
-    overflow-y: scroll;
+    //overflow: hidden;
+    //overflow-y: scroll;
 
     .items-box{
       display: flex;
@@ -255,7 +368,7 @@ export default {
     background-color: #ffffff;
 
     .close_btn{
-      top: 0.6rem;
+      bottom: 0.6rem;
       right: 0.6rem;
       position: absolute;
       cursor: pointer;
@@ -266,6 +379,8 @@ export default {
       transform: rotate(45deg);
       box-shadow: 0 0 0.5rem rgba(62, 141, 130, 0.8);
       background: linear-gradient(to right bottom, #FEFCA1, #A0ECC9);
+
+
       .bg{
         top: 2px;
         left: 2px;
