@@ -11,5 +11,22 @@
   <body>
     <div id="app"></div>
     <!-- built files will be auto injected -->
+
+  <script>
+
+      document.addEventListener('touchmove', function(event) {
+          if (event.touches.length > 1) {
+              event.preventDefault(); // 阻止多指缩放
+          }
+      }, { passive: false });
+
+      // 禁用 gesturestart 和 gesturechange 事件（在支持的浏览器中）
+      document.addEventListener('gesturestart', function(event) {
+          event.preventDefault();
+      });
+      document.addEventListener('gesturechange', function(event) {
+          event.preventDefault();
+      });
+  </script>
   </body>
 </html>
